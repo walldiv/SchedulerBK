@@ -1,5 +1,6 @@
 package com.scheduler.bkend.service;
 
+import com.scheduler.bkend.model.Address;
 import com.scheduler.bkend.model.Employee;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface IEmployeeService {
 
     Employee findOne(Employee employee);
     List<Employee> getEmployees(Employee employee);
-    boolean updateEmployee(Employee employee);
+    boolean updateEmployee(Employee employee, Address address);
 
 
 }

@@ -1,11 +1,15 @@
 package com.scheduler.bkend.model;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
+@DynamicUpdate
 @Table(name="clients")
-public class Client {
+public class Client implements MyClassUtils{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int clientid;
@@ -26,10 +30,14 @@ public class Client {
     @Column(name = "allowsms")
     private boolean allowsms;
 
+//    @OneToMany(mappedBy = "client")
+//    private List<Appointment> appointments;
+
     public Client() {
     }
 
-    public Client(String fname, String lname, String phone, int address, String email, LocalDate dateofbirth, String emergencycontact, boolean allowsms) {
+    public Client(String fname, String lname, String phone, int address, String email,
+                  LocalDate dateofbirth, String emergencycontact, boolean allowsms) {
         this.fname = fname;
         this.lname = lname;
         this.phone = phone;
@@ -40,17 +48,6 @@ public class Client {
         this.allowsms = allowsms;
     }
 
-    public Client merge(Client inClient){
-        this.setFname(inClient.getFname());
-        this.setLname(inClient.getLname());
-        this.setPhone(inClient.getPhone());
-        this.setAddress(inClient.getAddress());
-        this.setEmail(inClient.getEmail());
-        this.setDateofbirth(inClient.getDateofbirth());
-        this.setEmergencycontact(inClient.getEmergencycontact());
-        this.setAllowsms(inClient.isAllowsms());
-        return this;
-    }
     @Override
     public String toString() {
         return "Client{" +
@@ -120,4 +117,11 @@ public class Client {
     public void setAllowsms(boolean allowsms) {
         this.allowsms = allowsms;
     }
+
+//    public List<Appointment> getAppointments() {
+//        return appointments;
+//    }
+//    public void setAppointments(List<Appointment> appointments) {
+//        this.appointments = appointments;
+//    }
 }

@@ -1,7 +1,6 @@
 package com.scheduler.bkend.controller;
 
 import com.scheduler.bkend.model.Address;
-import com.scheduler.bkend.model.Client;
 import com.scheduler.bkend.model.Employee;
 import com.scheduler.bkend.service.AddressRepository;
 import com.scheduler.bkend.service.EmployeeRepository;
@@ -78,9 +77,9 @@ public class EmployeeController {
 
     @ResponseBody
     @PostMapping("/employee/update")
-    public ResponseEntity updateEmployee(@RequestBody Employee employee) {
-        logger.info("EmployeeController::updateEmployee => {}", employee.toString());
-        if(this.empService.updateEmployee(employee))
+    public ResponseEntity updateEmployee(@RequestBody EmployeeAndAddress inObject) {
+        logger.info("EmployeeController::updateEmployee => {}", inObject.employee.toString());
+        if(this.empService.updateEmployee(inObject.employee, inObject.address))
             return new ResponseEntity("EMPLOYEE UPATED SUCCESSFULLY", HttpStatus.OK);
         else return new ResponseEntity("ERROR IN UPATED", HttpStatus.BAD_REQUEST);
     }

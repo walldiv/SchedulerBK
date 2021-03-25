@@ -1,8 +1,8 @@
 package com.scheduler.bkend.controller;
 
 import com.scheduler.bkend.model.Address;
+import com.scheduler.bkend.model.Appointment;
 import com.scheduler.bkend.model.Client;
-import com.scheduler.bkend.model.Employee;
 import com.scheduler.bkend.service.AddressRepository;
 import com.scheduler.bkend.service.ClientRepository;
 import com.scheduler.bkend.service.IClientService;
@@ -27,6 +27,10 @@ public class ClientController {
     static class ClientAndAddress {
         public Client client;
         public Address address;
+    }
+    static class ClientAppointment {
+        public Client client;
+        public Appointment appointment;
     }
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -76,9 +80,9 @@ public class ClientController {
 
     @ResponseBody
     @PostMapping("/client/update")
-    public ResponseEntity updateClient(@RequestBody Client client){
-        logger.info("ClientController::updateClient => {}", client.toString());
-        if(this.clientService.updateClient(client))
+    public ResponseEntity updateClient(@RequestBody ClientAndAddress inObject){
+        logger.info("ClientController::updateClient => {}", inObject.client.toString());
+        if(this.clientService.updateClient(inObject.client, inObject.address))
             return new ResponseEntity("CLIENT UPDATED SUCCESSFULLY", HttpStatus.OK);
         else return new ResponseEntity("ERROR UPDATING CLIENT", HttpStatus.BAD_REQUEST);
     }
@@ -95,4 +99,34 @@ public class ClientController {
             return new ResponseEntity("ERROR DELETING CLIENT", HttpStatus.BAD_REQUEST);
         }
     }
+
+    /*******    APPOINTMENTS CONTROL   *********/
+    @ResponseBody
+    @GetMapping("/client/getappointment")
+    public ResponseEntity<List<Appointment>> getAppointments(@RequestBody Client client){
+        logger.info("ClientController::getAppointments => {}", client.toString());
+        List<Appointment> appointments = this.clientService.getAppointments(client);
+        return new ResponseEntity<List<Appointment>>(appointments, HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @PostMapping("/client/setappointment")
+    public ResponseEntity setAppointment(@RequestBody ClientAppointment inObject) {
+        if(this.clientService.setAppointment(inObject.client, inObject.appointment)){
+            return new ResponseEntity("APPOINTMENT SET SUCCESSFULLY", HttpStatus.OK);
+        }
+        else
+            return new ResponseEntity("ERROR CREATING APPOINTMENT", HttpStatus.BAD_REQUEST);
+    }
+
+    @ResponseBody
+    @PostMapping("/client/changeappointment")
+    public ResponseEntity changeAppointment(@RequestBody Appointment appointment) {
+        if(this.clientService.changeAppointment(appointment)){
+            return new ResponseEntity("APPOINTMENT CHANGED SUCCESSFULLY", HttpStatus.OK);
+        }
+        else
+            return new ResponseEntity("ERROR CHANGING APPOINTMENT", HttpStatus.BAD_REQUEST);
+    }
+
 }

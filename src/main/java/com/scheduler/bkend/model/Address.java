@@ -1,10 +1,13 @@
 package com.scheduler.bkend.model;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 
 @Entity
+@DynamicUpdate
 @Table(name = "address")
-public class Address {
+public class Address implements MyClassUtils{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int addressid;
@@ -48,7 +51,7 @@ public class Address {
     public int getAddressid() {
         return addressid;
     }
-     public void setAddressid(int addressid) {
+    public void setAddressid(int addressid) {
         this.addressid = addressid;
     }
     public String getStreet() {

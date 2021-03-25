@@ -1,5 +1,6 @@
 package com.scheduler.bkend.service;
 
+import com.scheduler.bkend.model.Address;
 import com.scheduler.bkend.model.Employee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +19,12 @@ import java.util.Optional;
 public class EmployeeServiceImpl implements IEmployeeService{
     private Logger logger = LoggerFactory.getLogger(getClass());
     private EmployeeRepository empRepo;
+    private AddressRepository addRepo;
 
     @Autowired
-    public EmployeeServiceImpl(EmployeeRepository empRepo) {
+    public EmployeeServiceImpl(EmployeeRepository empRepo, AddressRepository addRepo) {
         this.empRepo = empRepo;
+        this.addRepo = addRepo;
     }
 
 
@@ -60,13 +63,16 @@ public class EmployeeServiceImpl implements IEmployeeService{
     }
 
     @Override
-    public boolean updateEmployee(Employee employee) {
+    public boolean updateEmployee(Employee employee, Address address) {
+        Employee tmp = this.empRepo.getOne(employee.getEmpid());
+        Address tmpAddress = this.addRepo.getOne(address.getAddressid());
         try{
-            Employee tmp = this.empRepo.getOne(employee.getEmpid());
-//            System.out.printf("FOUND EMPLOYEE => %s \n", tmp.toString());
-            tmp.merge(employee);
-//            System.out.printf("AFTER UPDATE => %s\n", tmp.toString());
-            empRepo.save(tmp);
+//            logger.info("DB FOUND EMPLOYEE => {}", tmp.toString());
+            tmp = tmp.merge(employee);
+            tmpAddress = tmpAddress.merge(address);
+//            empRepo.save(tmp);
+//            addRepo.save(tmpAddress);
+            //            logger.info("AFTER MERGE EMPLOYEE => {}", tmp.toString());
             return true;
         } catch (Exception e) {
             e.printStackTrace();

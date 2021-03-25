@@ -1,17 +1,17 @@
 package com.scheduler.bkend.model;
 
-import javax.annotation.processing.Generated;
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@DynamicUpdate
 @Table(name = "appointments")
-public class Appointment {
+public class Appointment  implements MyClassUtils{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int appointmentid;
-    @Column(name = "client")
-    private int client;
     @Column(name = "creationdate")
     private LocalDateTime creationdate;
     @Column(name = "createdby")
@@ -24,29 +24,34 @@ public class Appointment {
     private String patientnotes;
     @Column(name = "employeenotes")
     private String employeenotes;
+    @Column(name = "client")
+    private int client;
 
-    public Appointment(int client, LocalDateTime creationdate, int createdby, int assignedto,
-                       LocalDateTime scheduledate, String patientnotes, String employeenotes) {
-        this.client = client;
+    public Appointment() {
+    }
+
+    public Appointment(LocalDateTime creationdate, int createdby, int assignedto, LocalDateTime scheduledate,
+                       String patientnotes, String employeenotes, int client) {
         this.creationdate = creationdate;
         this.createdby = createdby;
         this.assignedto = assignedto;
         this.scheduledate = scheduledate;
         this.patientnotes = patientnotes;
         this.employeenotes = employeenotes;
+        this.client = client;
     }
 
     @Override
     public String toString() {
         return "Appointment{" +
                 "appointmentid=" + appointmentid +
-                ", client=" + client +
                 ", creationdate=" + creationdate +
                 ", createdby=" + createdby +
                 ", assignedto=" + assignedto +
                 ", scheduledate=" + scheduledate +
                 ", patientnotes='" + patientnotes + '\'' +
                 ", employeenotes='" + employeenotes + '\'' +
+                ", client=" + client +
                 '}';
     }
 
@@ -55,12 +60,6 @@ public class Appointment {
     }
     public void setAppointmentid(int appointmentid) {
         this.appointmentid = appointmentid;
-    }
-    public int getClient() {
-        return client;
-    }
-    public void setClient(int client) {
-        this.client = client;
     }
     public LocalDateTime getCreationdate() {
         return creationdate;
@@ -97,5 +96,11 @@ public class Appointment {
     }
     public void setEmployeenotes(String employeenotes) {
         this.employeenotes = employeenotes;
+    }
+    public int getClient() {
+        return client;
+    }
+    public void setClient(int client) {
+        this.client = client;
     }
 }

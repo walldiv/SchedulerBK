@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @DynamicUpdate
 @Table(name="employees")
-public class Employee {
+public class Employee implements MyClassUtils {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int empid;
@@ -41,15 +41,6 @@ public class Employee {
         this.orgunit = orgunit;
     }
 
-    public Employee merge(Employee inEmployee) {
-        this.setAddress(inEmployee.getEmpid());
-        this.setEmail(inEmployee.getEmail());
-        this.setFname(inEmployee.getFname());
-        this.setLname(inEmployee.getLname());
-        this.setOrgunit(inEmployee.getOrgunit());
-        this.setPhone(inEmployee.getPhone());
-        return this;
-    }
 
     @Override
     public String toString() {
