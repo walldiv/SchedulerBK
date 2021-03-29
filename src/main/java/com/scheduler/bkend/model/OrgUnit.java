@@ -1,23 +1,29 @@
 package com.scheduler.bkend.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.List;
 
 @Entity
 @Table(name = "orgunits")
 public class OrgUnit {
     @Id
     private String orgname;
-    @Column(name = "description")
-    private String description;
+    @Type(type = "list-array")
+    @Column(name = "duties", columnDefinition = "text[]")
+    private List<String> duties;
     @Column(name = "dephead")
     private int dephead;
 
-    public OrgUnit(String orgname, String description, int dephead) {
+    public OrgUnit() {
+    }
+    public OrgUnit(String orgname, List<String> duties, int dephead) {
         this.orgname = orgname;
-        this.description = description;
+        this.duties = duties;
         this.dephead = dephead;
     }
 
@@ -25,7 +31,7 @@ public class OrgUnit {
     public String toString() {
         return "OrgUnit{" +
                 "orgname='" + orgname + '\'' +
-                ", description='" + description + '\'' +
+                ", duties=" + duties +
                 ", dephead=" + dephead +
                 '}';
     }
@@ -36,11 +42,11 @@ public class OrgUnit {
     public void setOrgname(String orgname) {
         this.orgname = orgname;
     }
-    public String getDescription() {
-        return description;
+    public List<String> getDuties() {
+        return duties;
     }
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDuties(List<String> duties) {
+        this.duties = duties;
     }
     public int getDephead() {
         return dephead;
