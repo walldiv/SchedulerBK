@@ -1,8 +1,10 @@
 package com.scheduler.bkend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
@@ -29,6 +31,13 @@ public class Employee implements MyClassUtils {
     @Column(name = "orgunit")
     private int orgunit;
 
+    @OneToOne
+    @JoinColumn(name = "workschedule")
+    private WorkSchedule workschedule;
+
+    @OneToMany(mappedBy = "employee")
+    private List<OutOfOffice> outofoffices;
+
     public Employee() {
     }
 
@@ -52,6 +61,7 @@ public class Employee implements MyClassUtils {
                 ", address=" + address +
                 ", email='" + email + '\'' +
                 ", orgunit=" + orgunit +
+                ", workschedule=" + workschedule +
                 '}';
     }
 
@@ -96,5 +106,20 @@ public class Employee implements MyClassUtils {
     }
     public void setOrgunit(int orgunit) {
         this.orgunit = orgunit;
+    }
+
+    public WorkSchedule getWorkschedule() {
+        return workschedule;
+    }
+    public void setWorkschedule(WorkSchedule workschedule) {
+        this.workschedule = workschedule;
+    }
+
+    @JsonIgnore
+    public List<OutOfOffice> getOutofoffices() {
+        return outofoffices;
+    }
+    public void setOutofoffices(List<OutOfOffice> outofoffices) {
+        this.outofoffices = outofoffices;
     }
 }

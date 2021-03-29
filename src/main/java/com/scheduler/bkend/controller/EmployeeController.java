@@ -2,6 +2,8 @@ package com.scheduler.bkend.controller;
 
 import com.scheduler.bkend.model.Address;
 import com.scheduler.bkend.model.Employee;
+import com.scheduler.bkend.model.OutOfOffice;
+import com.scheduler.bkend.model.WorkSchedule;
 import com.scheduler.bkend.service.AddressRepository;
 import com.scheduler.bkend.service.EmployeeRepository;
 import com.scheduler.bkend.service.IEmployeeService;
@@ -29,6 +31,16 @@ public class EmployeeController {
         public Address address;
     }
 
+    static class EmployeeWorkSchedule {
+        public Employee employee;
+        public WorkSchedule schedule;
+    }
+
+    static class EmployeeOOO{
+        public Employee employee;
+        public OutOfOffice outOfOffice;
+    }
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private IEmployeeService empService;
     private EmployeeRepository empRepo;
@@ -51,18 +63,18 @@ public class EmployeeController {
         ExampleMatcher matchlist = ExampleMatcher.matchingAll()
                 .withMatcher("street", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
                 .withMatcher("zipcode", ExampleMatcher.GenericPropertyMatchers.ignoreCase().contains())
-                .withIgnorePaths("addressid", "street2","city", "state", "country");
+                .withIgnorePaths("addressid", "street2", "city", "state", "country");
         Example<Address> example = Example.of(inObject.address, matchlist);
         Optional<Address> thisAddress = this.addressRepo.findOne(example);
         int addressid = -1;
-        if(thisAddress.isPresent())
+        if (thisAddress.isPresent())
             addressid = thisAddress.get().getAddressid();
-        else{
+        else {
             Address tmp = this.addressRepo.save(inObject.address);
             addressid = tmp.getAddressid();
         }
         inObject.employee.setAddress(addressid);
-        if(this.empService.createEmployee(inObject.employee))
+        if (this.empService.createEmployee(inObject.employee))
             return new ResponseEntity("EMPLOYEE CREATED SUCCESSFULLY", HttpStatus.OK);
         else return new ResponseEntity("EMPLOYEE ALREADY EXISTS IN SYSTEM", HttpStatus.BAD_REQUEST);
     }
@@ -79,7 +91,7 @@ public class EmployeeController {
     @PostMapping("/employee/update")
     public ResponseEntity updateEmployee(@RequestBody EmployeeAndAddress inObject) {
         logger.info("EmployeeController::updateEmployee => {}", inObject.employee.toString());
-        if(this.empService.updateEmployee(inObject.employee, inObject.address))
+        if (this.empService.updateEmployee(inObject.employee, inObject.address))
             return new ResponseEntity("EMPLOYEE UPATED SUCCESSFULLY", HttpStatus.OK);
         else return new ResponseEntity("ERROR IN UPATED", HttpStatus.BAD_REQUEST);
     }
@@ -88,7 +100,7 @@ public class EmployeeController {
     @PostMapping("/employee/delete")
     public ResponseEntity deleteEmployee(@RequestBody Employee employee) {
         logger.info("EmployeeController::deleteEmployee => {}", employee.toString());
-        try{
+        try {
             Employee tmp = this.empRepo.getOne(employee.getEmpid());
             System.out.printf("FOUND EMPLOYEE => %s", tmp.toString());
             this.empRepo.delete(tmp);
@@ -96,5 +108,47 @@ public class EmployeeController {
         } catch (EntityNotFoundException e) {
             return new ResponseEntity("ERROR DELETING", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @ResponseBody
+    @PostMapping("/employee/setworkschedule")
+    public ResponseEntity setWorkSchedule(@RequestBody EmployeeWorkSchedule inObject) {
+        logger.info("EmployeeController::setWorkSchedule => {}", inObject.schedule.toString());
+        if (this.empService.setEmployeeSchedule(inObject.employee, inObject.schedule)) {
+            return new ResponseEntity("SCHEDULE SET", HttpStatus.OK);
+        } else
+            return new ResponseEntity("PROBLEM SETTING SCHEDULE", HttpStatus.BAD_REQUEST);
+    }
+
+    @ResponseBody
+    @GetMapping("/employee/getworkschedule")
+    public ResponseEntity<WorkSchedule> setWorkSchedule(@RequestBody Employee employee) {
+        WorkSchedule tmp = this.empService.getEmployeeSchedule(employee);
+        return new ResponseEntity<WorkSchedule>(tmp, HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @PostMapping("/employee/setoutofoffice")
+    public ResponseEntity setOutOfOffice(@RequestBody EmployeeOOO inObject){
+        if(this.empService.setOutOfOffice(inObject.employee, inObject.outOfOffice))
+            return new ResponseEntity("OOO SET PROPERLY", HttpStatus.OK);
+        else
+            return new ResponseEntity("FAILED TO SET OOO", HttpStatus.BAD_REQUEST);
+    }
+
+    @ResponseBody
+    @GetMapping("/employee/getoutofoffice")
+    public ResponseEntity<List<OutOfOffice>> getOutOfOffice(@RequestBody Employee employee) {
+        List<OutOfOffice> tmp = this.empService.getOutOfOffices(employee);
+        return new ResponseEntity<List<OutOfOffice>>(tmp, HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @PostMapping("/employee/deleteoutofoffice")
+    public ResponseEntity deleteOutOfOffice(@RequestBody EmployeeOOO inObject) {
+        if(this.empService.deleteOutOfOffice(inObject.outOfOffice))
+            return new ResponseEntity("OUT OF OFFICE REMOVED SUCCESS", HttpStatus.OK);
+        else
+            return new ResponseEntity("ERROR REMOVING OUT OF OFFICE", HttpStatus.BAD_REQUEST);
     }
 }
