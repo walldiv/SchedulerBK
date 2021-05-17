@@ -59,6 +59,11 @@ public class EmployeeServiceImpl implements IEmployeeService{
     }
 
     @Override
+    public List<Employee> getAllEmployees(){
+        return empRepo.findAll();
+    };
+
+    @Override
     public List<Employee> getEmployees(Employee employee) {
         List<Employee> tmp = new ArrayList<>();
         ExampleMatcher matchlist = ExampleMatcher.matchingAll()

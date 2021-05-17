@@ -47,6 +47,11 @@ public class ClientServiceImpl implements IClientService {
     }
 
     @Override
+    public Client getClient(int clientid) {
+        return this.clientRepo.findById(clientid).get();
+    }
+
+    @Override
     public List<Client> getClients(Client client) {
         List<Client> clients = new ArrayList<>();
         ExampleMatcher matchlist = ExampleMatcher.matchingAll()
@@ -73,6 +78,13 @@ public class ClientServiceImpl implements IClientService {
             logger.error(e.toString());
             return false;
         }
+    }
+
+    @Override
+    public Appointment getAppointmentById(int apptId) {
+        Appointment tmp = this.apptRepo.findById(apptId).get();
+        logger.info("ClientServiceImpl::getAppointmentById()   APPOINTMENT => {}", tmp);
+        return tmp;
     }
 
     @Override

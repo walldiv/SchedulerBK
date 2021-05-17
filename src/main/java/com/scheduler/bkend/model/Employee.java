@@ -29,7 +29,7 @@ public class Employee implements MyClassUtils {
     @Column(name = "email")
     private String email;
     @Column(name = "orgunit")
-    private int orgunit;
+    private String orgunit;
 
     @OneToOne
     @JoinColumn(name = "workschedule")
@@ -41,7 +41,7 @@ public class Employee implements MyClassUtils {
     public Employee() {
     }
 
-    public Employee(String fname, String lname, String phone, int address, String email, int orgunit) {
+    public Employee(String fname, String lname, String phone, int address, String email, String orgunit) {
         this.fname = fname;
         this.lname = lname;
         this.phone = phone;
@@ -101,10 +101,10 @@ public class Employee implements MyClassUtils {
     public void setEmail(String email) {
         this.email = email;
     }
-    public int getOrgunit() {
+    public String getOrgunit() {
         return orgunit;
     }
-    public void setOrgunit(int orgunit) {
+    public void setOrgunit(String orgunit) {
         this.orgunit = orgunit;
     }
 

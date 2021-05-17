@@ -15,6 +15,7 @@ public interface IEmployeeService {
     boolean createEmployee(Employee employee);
 
     Employee findOne(Employee employee);
+    List<Employee> getAllEmployees();
     List<Employee> getEmployees(Employee employee);
     boolean updateEmployee(Employee employee, Address address);
 

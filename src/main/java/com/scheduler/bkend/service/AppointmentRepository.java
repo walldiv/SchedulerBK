@@ -11,4 +11,7 @@ import java.util.List;
 public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
     @Query("SELECT a from Appointment a WHERE a.client = ?1")
     List<Appointment> findAllByClientId(int clientid);
+
+    @Query("SELECT a from Appointment a WHERE a.assignedto = ?1")
+    List<Appointment> findAllByEmployeetId(int employeeid);
 }

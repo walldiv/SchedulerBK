@@ -2,26 +2,28 @@ package com.scheduler.bkend.model;
 
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "orgunits")
-public class OrgUnit {
+public class OrgUnit implements MyClassUtils{
     @Id
     private String orgname;
     @Type(type = "list-array")
     @Column(name = "duties", columnDefinition = "text[]")
     private List<String> duties;
-    @Column(name = "dephead")
-    private int dephead;
+//    @Column(name = "dephead")
+//    private int dephead;
+
+    @OneToOne
+    @JoinColumn(name = "dephead")
+    private Employee dephead;
+
 
     public OrgUnit() {
     }
-    public OrgUnit(String orgname, List<String> duties, int dephead) {
+    public OrgUnit(String orgname, List<String> duties, Employee dephead) {
         this.orgname = orgname;
         this.duties = duties;
         this.dephead = dephead;
@@ -48,10 +50,10 @@ public class OrgUnit {
     public void setDuties(List<String> duties) {
         this.duties = duties;
     }
-    public int getDephead() {
+    public Employee getDephead() {
         return dephead;
     }
-    public void setDephead(int dephead) {
+    public void setDephead(Employee dephead) {
         this.dephead = dephead;
     }
 }

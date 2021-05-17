@@ -1,6 +1,9 @@
 package com.scheduler.bkend.model;
 
 import java.lang.reflect.Field;
+import java.util.List;
+
+import static org.springframework.data.util.CastUtils.cast;
 
 public interface MyClassUtils {
 
@@ -31,6 +34,19 @@ public interface MyClassUtils {
             }
             else if(field.getAnnotatedType().toString().equals("java.time.LocalDateTime")){
                 System.out.printf("LOCALDATETIME FIELD FOUND - VAL: %s \n", field.get(this));
+                field.set(merged, (remote != null) ? remote : local);
+            }
+            else if(field.getAnnotatedType().toString().equals("java.util.List<java.lang.String>")){
+                System.out.printf("LIST<STRING> FIELD FOUND - VAL: %s \n", field.get(this));
+                System.out.printf("LIST TO CHANGE TO - VAL: %s", remote);
+                List<String> list = cast(remote);
+                field.set(merged, (list.size() == 0) ? local : list);
+            }
+            //This final catch-all handles complex custom object types - simply uses the remote if remote != null
+            //this isnt intended for merging of sub-objects to the main object...simply for a use-case of JSON objects
+            //being passed into the main object and utilizing that JSON-mapped data to an object.
+            else{
+                System.out.printf("OTHER TYPE FOUND: \n" + field.get(this) + "\n");
                 field.set(merged, (remote != null) ? remote : local);
             }
         }

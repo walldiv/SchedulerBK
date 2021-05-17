@@ -9,9 +9,11 @@ import java.util.List;
 public interface IClientService {
 
     boolean createClient(Client client);
+    Client getClient(int clientid);
     List<Client> getClients(Client client);
     boolean updateClient(Client client, Address address);
 
+    Appointment getAppointmentById(int apptId);
     List<Appointment> getAppointments(Client client);
     boolean setAppointment(Client client, Appointment appointment);
     boolean changeAppointment(Appointment appointment);

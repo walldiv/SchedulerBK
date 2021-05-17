@@ -1,10 +1,8 @@
 package com.scheduler.bkend.controller;
 
-import com.scheduler.bkend.model.Address;
-import com.scheduler.bkend.model.Employee;
-import com.scheduler.bkend.model.OutOfOffice;
-import com.scheduler.bkend.model.WorkSchedule;
+import com.scheduler.bkend.model.*;
 import com.scheduler.bkend.service.AddressRepository;
+import com.scheduler.bkend.service.AppointmentRepository;
 import com.scheduler.bkend.service.EmployeeRepository;
 import com.scheduler.bkend.service.IEmployeeService;
 import org.slf4j.Logger;
@@ -15,15 +13,13 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @Controller
 public class EmployeeController {
     static class EmployeeAndAddress {
@@ -45,13 +41,16 @@ public class EmployeeController {
     private IEmployeeService empService;
     private EmployeeRepository empRepo;
     private AddressRepository addressRepo;
+    private AppointmentRepository apptRepo;
 
 
     @Autowired
-    public EmployeeController(IEmployeeService empService, EmployeeRepository empRepo, AddressRepository addressRepo) {
+    public EmployeeController(IEmployeeService empService, EmployeeRepository empRepo, AddressRepository addressRepo,
+                              AppointmentRepository apptRepo) {
         this.empService = empService;
         this.empRepo = empRepo;
         this.addressRepo = addressRepo;
+        this.apptRepo = apptRepo;
     }
 
     @ResponseBody
@@ -81,11 +80,25 @@ public class EmployeeController {
 
     @ResponseBody
     @GetMapping("/employee/get")
-    public ResponseEntity<List<Employee>> getEmployee(@RequestBody Employee employee) {
-        logger.info("EmployeeController::getEmployee => {}", employee.toString());
-        List<Employee> list = this.empService.getEmployees(employee);
+    public ResponseEntity<List<Employee>> getEmployee() {
+        List<Employee> list = this.empService.getAllEmployees();
         return new ResponseEntity<List<Employee>>(list, HttpStatus.OK);
     }
+
+    @ResponseBody
+    @GetMapping("/employee/getappointments")
+    public ResponseEntity<List<Appointment>> getEmployeeAppointments(@RequestParam("empid") int empid) {
+        List<Appointment> list = this.apptRepo.findAllByEmployeetId(empid);
+        return new ResponseEntity<List<Appointment>>(list, HttpStatus.OK);
+    }
+
+//    @ResponseBody
+//    @GetMapping("/employee/get")
+//    public ResponseEntity<List<Employee>> getEmployee(@RequestBody Employee employee) {
+//        logger.info("EmployeeController::getEmployee => {}", employee.toString());
+//        List<Employee> list = this.empService.getEmployees(employee);
+//        return new ResponseEntity<List<Employee>>(list, HttpStatus.OK);
+//    }
 
     @ResponseBody
     @PostMapping("/employee/update")

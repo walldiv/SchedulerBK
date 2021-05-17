@@ -14,14 +14,12 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @Controller
 public class ClientController {
     static class ClientAndAddress {
@@ -72,10 +70,10 @@ public class ClientController {
 
     @ResponseBody
     @GetMapping("/client/get")
-    public ResponseEntity<List<Client>> getClient(@RequestBody Client client) {
-        logger.info("ClientController::getClient => {}", client.toString());
-        List<Client> clients = this.clientService.getClients(client);
-        return new ResponseEntity<List<Client>>(clients, HttpStatus.OK);
+    public ResponseEntity<Client> getClient(@RequestParam("clientid") int clientid) {
+        logger.info("ClientController::getClient => {}", clientid);
+        Client client = this.clientService.getClient(clientid);
+        return new ResponseEntity<Client>(client, HttpStatus.OK);
     }
 
     @ResponseBody
@@ -107,6 +105,17 @@ public class ClientController {
         logger.info("ClientController::getAppointments => {}", client.toString());
         List<Appointment> appointments = this.clientService.getAppointments(client);
         return new ResponseEntity<List<Appointment>>(appointments, HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @GetMapping("/client/getsingleappointment")
+    public ResponseEntity<Appointment> getSingleAppointment(@RequestParam("appt") int apptId){
+        logger.info("ClientController::getSingleAppointment => {}", apptId);
+        Appointment tmp= this.clientService.getAppointmentById(apptId);
+        if(tmp == null)
+            return new ResponseEntity<Appointment>(tmp, HttpStatus.BAD_REQUEST);
+        else
+            return new ResponseEntity<Appointment>(tmp, HttpStatus.OK);
     }
 
     @ResponseBody
