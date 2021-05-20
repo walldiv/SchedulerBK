@@ -50,7 +50,7 @@ public interface MyClassUtils {
                 field.set(merged, (remote != null) ? remote : local);
             }
         }
-        System.out.printf("FINAL OBJECT => %s", merged.toString());
+        System.out.printf("FINAL OBJECT => %s \n", merged.toString());
         return (T)merged;
     }
 

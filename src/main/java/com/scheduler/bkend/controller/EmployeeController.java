@@ -65,14 +65,12 @@ public class EmployeeController {
                 .withIgnorePaths("addressid", "street2", "city", "state", "country");
         Example<Address> example = Example.of(inObject.address, matchlist);
         Optional<Address> thisAddress = this.addressRepo.findOne(example);
-        int addressid = -1;
-        if (thisAddress.isPresent())
-            addressid = thisAddress.get().getAddressid();
+        if(thisAddress.isPresent())
+            inObject.employee.setAddress(thisAddress.get());
         else {
-            Address tmp = this.addressRepo.save(inObject.address);
-            addressid = tmp.getAddressid();
+            inObject.employee.setAddress(inObject.address);
+            this.addressRepo.save(inObject.address);
         }
-        inObject.employee.setAddress(addressid);
         if (this.empService.createEmployee(inObject.employee))
             return new ResponseEntity("EMPLOYEE CREATED SUCCESSFULLY", HttpStatus.OK);
         else return new ResponseEntity("EMPLOYEE ALREADY EXISTS IN SYSTEM", HttpStatus.BAD_REQUEST);
@@ -84,6 +82,20 @@ public class EmployeeController {
         List<Employee> list = this.empService.getAllEmployees();
         return new ResponseEntity<List<Employee>>(list, HttpStatus.OK);
     }
+    @ResponseBody
+    @PostMapping("/employee/getsingle")
+    public ResponseEntity<Employee> getEmployeeSingle(@RequestBody Employee employee) {
+        logger.info("EmployeeController::getEmployeeSingle => {}", employee.toString());
+//        Employee ret = this.empService.findOne(employee);
+        ExampleMatcher matchlist = ExampleMatcher.matchingAny()
+                .withMatcher("email", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
+                .withMatcher("phone", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
+                .withIgnorePaths("fname", "lname", "orgunit", "workschedule", "outofoffices");
+        Example<Employee> example = Example.of(employee, matchlist);
+        Optional<Employee> thisEmp = this.empRepo.findOne(example);
+        logger.info("EMPLOYEE RETURNED => {}", thisEmp.get().toString());
+        return new ResponseEntity<Employee>(thisEmp.get(), HttpStatus.OK);
+    }
 
     @ResponseBody
     @GetMapping("/employee/getappointments")
@@ -92,19 +104,13 @@ public class EmployeeController {
         return new ResponseEntity<List<Appointment>>(list, HttpStatus.OK);
     }
 
-//    @ResponseBody
-//    @GetMapping("/employee/get")
-//    public ResponseEntity<List<Employee>> getEmployee(@RequestBody Employee employee) {
-//        logger.info("EmployeeController::getEmployee => {}", employee.toString());
-//        List<Employee> list = this.empService.getEmployees(employee);
-//        return new ResponseEntity<List<Employee>>(list, HttpStatus.OK);
-//    }
 
     @ResponseBody
     @PostMapping("/employee/update")
-    public ResponseEntity updateEmployee(@RequestBody EmployeeAndAddress inObject) {
-        logger.info("EmployeeController::updateEmployee => {}", inObject.employee.toString());
-        if (this.empService.updateEmployee(inObject.employee, inObject.address))
+    public ResponseEntity updateEmployee(@RequestBody Employee inObject) {
+        logger.info("EmployeeController::updateEmployee => {}", inObject.toString());
+//        if (this.empService.updateEmployee(inObject.employee, inObject.address))
+        if (this.empService.updateEmployee(inObject))
             return new ResponseEntity("EMPLOYEE UPATED SUCCESSFULLY", HttpStatus.OK);
         else return new ResponseEntity("ERROR IN UPATED", HttpStatus.BAD_REQUEST);
     }

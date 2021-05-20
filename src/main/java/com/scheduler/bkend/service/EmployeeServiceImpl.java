@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -76,17 +77,31 @@ public class EmployeeServiceImpl implements IEmployeeService{
         return tmp;
     }
 
+
     @Override
-    public boolean updateEmployee(Employee employee, Address address) {
-        Employee tmp = this.empRepo.getOne(employee.getEmpid());
-        Address tmpAddress = this.addRepo.getOne(address.getAddressid());
+    public boolean updateEmployee(Employee emp) {
+        Employee tmp = this.empRepo.getOne(emp.getEmpid());
+        logger.info("EMP FROM REPO => {}", tmp.toString());
         try{
-//            logger.info("DB FOUND EMPLOYEE => {}", tmp.toString());
-            tmp = tmp.merge(employee);
-            tmpAddress = tmpAddress.merge(address);
-//            empRepo.save(tmp);
-//            addRepo.save(tmpAddress);
-            //            logger.info("AFTER MERGE EMPLOYEE => {}", tmp.toString());
+            /* You have to get and store an object, then use setters on that object in order
+            for JPA to transact to the database.  Kinda weird - but follow the below method to
+            pull this off.
+             */
+            //WORKSCHEDULE - needs setters to update DBase .. TESTED/SUCCESSFUL
+            WorkSchedule thisWorkSched = tmp.getWorkschedule();
+            thisWorkSched = thisWorkSched.merge(emp.getWorkschedule());
+            tmp.getWorkschedule().setDay(thisWorkSched.getDay());
+            tmp.getWorkschedule().setTimein(thisWorkSched.getTimein());
+            tmp.getWorkschedule().setTimeout(thisWorkSched.getTimeout());
+            //ADDRESS
+            Address thisAddress = tmp.getAddress();
+            thisAddress = thisAddress.merge(emp.getAddress());
+            tmp.getAddress().setStreet(thisAddress.getStreet());
+            tmp.getAddress().setStreet2(thisAddress.getStreet2());
+            tmp.getAddress().setCity(thisAddress.getCity());
+            tmp.getAddress().setState(thisAddress.getState());
+            tmp.getAddress().setZipcode(thisAddress.getZipcode());
+            tmp.getAddress().setCountry(thisAddress.getCountry());
             return true;
         } catch (Exception e) {
             e.printStackTrace();

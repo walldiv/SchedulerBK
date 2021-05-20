@@ -17,7 +17,8 @@ public interface IEmployeeService {
     Employee findOne(Employee employee);
     List<Employee> getAllEmployees();
     List<Employee> getEmployees(Employee employee);
-    boolean updateEmployee(Employee employee, Address address);
+//    boolean updateEmployee(Employee employee, Address address);
+    boolean updateEmployee(Employee emp);
 
     boolean setEmployeeSchedule(Employee employee, WorkSchedule schedule);
     WorkSchedule getEmployeeSchedule(Employee employee);
