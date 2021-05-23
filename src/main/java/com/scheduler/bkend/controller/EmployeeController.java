@@ -1,10 +1,7 @@
 package com.scheduler.bkend.controller;
 
 import com.scheduler.bkend.model.*;
-import com.scheduler.bkend.service.AddressRepository;
-import com.scheduler.bkend.service.AppointmentRepository;
-import com.scheduler.bkend.service.EmployeeRepository;
-import com.scheduler.bkend.service.IEmployeeService;
+import com.scheduler.bkend.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,36 +39,38 @@ public class EmployeeController {
     private EmployeeRepository empRepo;
     private AddressRepository addressRepo;
     private AppointmentRepository apptRepo;
+    private WorkScheduleRepository workRepo;
 
 
     @Autowired
     public EmployeeController(IEmployeeService empService, EmployeeRepository empRepo, AddressRepository addressRepo,
-                              AppointmentRepository apptRepo) {
+                              AppointmentRepository apptRepo, WorkScheduleRepository workRepo) {
         this.empService = empService;
         this.empRepo = empRepo;
         this.addressRepo = addressRepo;
         this.apptRepo = apptRepo;
+        this.workRepo = workRepo;
     }
 
     @ResponseBody
     @PostMapping("/employee/create")
-    public ResponseEntity createEmployee(@RequestBody EmployeeAndAddress inObject) {
-        logger.info("ClientController::createClient => {}", inObject.employee.toString());
-        logger.info("ClientController::createClient => {}", inObject.address.toString());
+    public ResponseEntity createEmployee(@RequestBody Employee inObject) {
+        logger.info("ClientController::createClient => {}", inObject.toString());
         //Add the address if it doesnt already exist - else use existing address in DB
         ExampleMatcher matchlist = ExampleMatcher.matchingAll()
                 .withMatcher("street", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
                 .withMatcher("zipcode", ExampleMatcher.GenericPropertyMatchers.ignoreCase().contains())
                 .withIgnorePaths("addressid", "street2", "city", "state", "country");
-        Example<Address> example = Example.of(inObject.address, matchlist);
+        Example<Address> example = Example.of(inObject.getAddress(), matchlist);
         Optional<Address> thisAddress = this.addressRepo.findOne(example);
         if(thisAddress.isPresent())
-            inObject.employee.setAddress(thisAddress.get());
+            inObject.setAddress(thisAddress.get());
         else {
-            inObject.employee.setAddress(inObject.address);
-            this.addressRepo.save(inObject.address);
+//            inObject.employee.setAddress(inObject.address);
+            this.addressRepo.save(inObject.getAddress());
         }
-        if (this.empService.createEmployee(inObject.employee))
+        this.workRepo.save(inObject.getWorkschedule());
+        if (this.empService.createEmployee(inObject))
             return new ResponseEntity("EMPLOYEE CREATED SUCCESSFULLY", HttpStatus.OK);
         else return new ResponseEntity("EMPLOYEE ALREADY EXISTS IN SYSTEM", HttpStatus.BAD_REQUEST);
     }

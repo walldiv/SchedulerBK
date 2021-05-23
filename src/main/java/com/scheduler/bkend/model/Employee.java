@@ -33,7 +33,7 @@ public class Employee implements MyClassUtils {
     @JoinColumn(name = "address")
     private Address address;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "workschedule")
     private WorkSchedule workschedule;
 
