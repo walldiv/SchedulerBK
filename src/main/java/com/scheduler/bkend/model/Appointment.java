@@ -28,13 +28,15 @@ public class Appointment  implements MyClassUtils{
     private int client;
     @Column(name = "duration")
     private int duration;
+    @Column(name = "reason")
+    private String reason;
 
 
     public Appointment() {
     }
 
     public Appointment(LocalDateTime creationdate, int createdby, int assignedto, LocalDateTime scheduledate,
-                       String patientnotes, String employeenotes, int client, int duration) {
+                       String patientnotes, String employeenotes, int client, int duration, String reason) {
         this.creationdate = creationdate;
         this.createdby = createdby;
         this.assignedto = assignedto;
@@ -43,6 +45,7 @@ public class Appointment  implements MyClassUtils{
         this.employeenotes = employeenotes;
         this.client = client;
         this.duration = duration;
+        this.reason = reason;
     }
 
     @Override
@@ -57,6 +60,7 @@ public class Appointment  implements MyClassUtils{
                 ", employeenotes='" + employeenotes + '\'' +
                 ", client=" + client +
                 ", duration=" + duration +
+                ", reason=" + reason +
                 '}';
     }
 
@@ -113,5 +117,11 @@ public class Appointment  implements MyClassUtils{
     }
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+    public String getReason() {
+        return reason;
+    }
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }

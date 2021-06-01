@@ -13,6 +13,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +35,12 @@ public class EmployeeController {
     static class EmployeeOOO{
         public Employee employee;
         public OutOfOffice outOfOffice;
+    }
+
+    static class EmployeeApptDateRange{
+        public Employee employee;
+        public LocalDateTime startDate;
+        public LocalDateTime endDate;
     }
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -99,12 +108,29 @@ public class EmployeeController {
     @ResponseBody
     @GetMapping("/employee/getappointments")
     public ResponseEntity<List<Appointment>> getEmployeeAppointments(@RequestParam("empid") int empid) {
-        List<Appointment> list = this.apptRepo.findAllByEmployeetId(empid);
+        List<Appointment> list = this.apptRepo.findAllByEmployeeId(empid);
         return new ResponseEntity<List<Appointment>>(list, HttpStatus.OK);
     }
 
-
     @ResponseBody
+    @PostMapping("/employee/getappointmentsdaterange")
+    public ResponseEntity<List<Appointment>> getEmployeeAppointmentsByDateRange(@RequestBody EmployeeApptDateRange inObject) {
+        inObject.endDate = inObject.endDate.plusHours(23);
+        logger.info("getEmployeeAppointmentsByDateRange() => \n {} \n {}", inObject.startDate.toString(), inObject.endDate.toString());
+        List<Appointment> finalList = new ArrayList<>();
+        List<Appointment> list = this.apptRepo.findAllByEmployeeId(inObject.employee.getEmpid());
+        for(Appointment appt : list){
+            System.out.printf("SCHEDULED DATE => %s \n", appt.getScheduledate());
+            if(appt.getScheduledate().isAfter(inObject.startDate) && appt.getScheduledate().isBefore(inObject.endDate)) {
+                System.out.printf("ADDING APPT TO RET LIST => %s", appt.getScheduledate());
+                finalList.add(appt);
+            }
+        }
+        return new ResponseEntity<List<Appointment>>(finalList, HttpStatus.OK);
+    }
+
+
+        @ResponseBody
     @PostMapping("/employee/update")
     public ResponseEntity updateEmployee(@RequestBody Employee inObject) {
         logger.info("EmployeeController::updateEmployee => {}", inObject.toString());

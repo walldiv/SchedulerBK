@@ -77,6 +77,15 @@ public class ClientController {
     }
 
     @ResponseBody
+    @GetMapping("/client/getall")
+    public ResponseEntity<List<Client>> getAllClients() {
+        logger.info("ClientController::getClients => {}");
+        List<Client> clients = this.clientService.getClients();
+        return new ResponseEntity<List<Client>>(clients, HttpStatus.OK);
+    }
+
+
+    @ResponseBody
     @PostMapping("/client/update")
     public ResponseEntity updateClient(@RequestBody ClientAndAddress inObject){
         logger.info("ClientController::updateClient => {}", inObject.client.toString());
@@ -120,8 +129,9 @@ public class ClientController {
 
     @ResponseBody
     @PostMapping("/client/setappointment")
-    public ResponseEntity setAppointment(@RequestBody ClientAppointment inObject) {
-        if(this.clientService.setAppointment(inObject.client, inObject.appointment)){
+    public ResponseEntity setAppointment(@RequestBody Appointment inObject) {
+        logger.info("setappointment() => ", inObject.toString());
+        if(this.clientService.setAppointment(inObject)){
             return new ResponseEntity("APPOINTMENT SET SUCCESSFULLY", HttpStatus.OK);
         }
         else

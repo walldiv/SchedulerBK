@@ -52,16 +52,16 @@ public class ClientServiceImpl implements IClientService {
     }
 
     @Override
-    public List<Client> getClients(Client client) {
-        List<Client> clients = new ArrayList<>();
-        ExampleMatcher matchlist = ExampleMatcher.matchingAll()
-                .withMatcher("fname", ExampleMatcher.GenericPropertyMatchers.ignoreCase().contains())
-                .withMatcher("lname", ExampleMatcher.GenericPropertyMatchers.ignoreCase().contains())
-                .withMatcher("email", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
-                .withIgnorePaths("clientid", "phone","address", "allowsms", "emergencycontact");
-        Example<Client> example = Example.of(client, matchlist);
-        clients = clientRepo.findAll(example);
-        return clients;
+    public List<Client> getClients() {
+//        List<Client> clients = new ArrayList<>();
+//        ExampleMatcher matchlist = ExampleMatcher.matchingAll()
+//                .withMatcher("fname", ExampleMatcher.GenericPropertyMatchers.ignoreCase().contains())
+//                .withMatcher("lname", ExampleMatcher.GenericPropertyMatchers.ignoreCase().contains())
+//                .withMatcher("email", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
+//                .withIgnorePaths("clientid", "phone","address", "allowsms", "emergencycontact");
+//        Example<Client> example = Example.of(client, matchlist);
+//        clients = clientRepo.findAll();
+        return this.clientRepo.findAll();
     }
 
     @Override
@@ -95,9 +95,9 @@ public class ClientServiceImpl implements IClientService {
     }
 
     @Override
-    public boolean setAppointment(Client client, Appointment appointment) {
+    public boolean setAppointment(Appointment appointment) {
 //        Client tmp = this.clientRepo.getOne(client.getClientid());
-        appointment.setClient(client.getClientid());
+        appointment.setClient(appointment.getClient());
         appointment.setCreationdate(LocalDateTime.now());
         try{
             Appointment tmpAppt = this.apptRepo.save(appointment);

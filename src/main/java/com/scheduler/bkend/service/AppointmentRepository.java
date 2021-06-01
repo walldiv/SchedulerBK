@@ -13,5 +13,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     List<Appointment> findAllByClientId(int clientid);
 
     @Query("SELECT a from Appointment a WHERE a.assignedto = ?1")
-    List<Appointment> findAllByEmployeetId(int employeeid);
+    List<Appointment> findAllByEmployeeId(int employeeid);
 }
