@@ -81,6 +81,7 @@ public class EmployeeServiceImpl implements IEmployeeService{
     @Override
     public boolean updateEmployee(Employee emp) {
         Employee tmp = this.empRepo.getOne(emp.getEmpid());
+        System.out.printf("PASSED EMPLOYEE => %s", tmp.toString());
         logger.info("EMP FROM REPO => {}", tmp.toString());
         try{
             /* You have to get and store an object, then use setters on that object in order
@@ -89,10 +90,17 @@ public class EmployeeServiceImpl implements IEmployeeService{
              */
             //WORKSCHEDULE - needs setters to update DBase .. TESTED/SUCCESSFUL
             WorkSchedule thisWorkSched = tmp.getWorkschedule();
-            thisWorkSched = thisWorkSched.merge(emp.getWorkschedule());
-            tmp.getWorkschedule().setDay(thisWorkSched.getDay());
-            tmp.getWorkschedule().setTimein(thisWorkSched.getTimein());
-            tmp.getWorkschedule().setTimeout(thisWorkSched.getTimeout());
+            if(thisWorkSched == null){
+                thisWorkSched = emp.getWorkschedule();
+                System.out.printf("THIS WORK SCHEDULE => %s", thisWorkSched.toString());
+                tmp.setWorkschedule(thisWorkSched);
+            }
+            else {
+                thisWorkSched = thisWorkSched.merge(emp.getWorkschedule());
+                tmp.getWorkschedule().setDay(thisWorkSched.getDay());
+                tmp.getWorkschedule().setTimein(thisWorkSched.getTimein());
+                tmp.getWorkschedule().setTimeout(thisWorkSched.getTimeout());
+            }
             //ADDRESS
             Address thisAddress = tmp.getAddress();
             thisAddress = thisAddress.merge(emp.getAddress());
@@ -102,6 +110,9 @@ public class EmployeeServiceImpl implements IEmployeeService{
             tmp.getAddress().setState(thisAddress.getState());
             tmp.getAddress().setZipcode(thisAddress.getZipcode());
             tmp.getAddress().setCountry(thisAddress.getCountry());
+            //FINAL EMPLOYEE INFO
+            tmp = tmp.merge(emp);
+            this.empRepo.save(tmp);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

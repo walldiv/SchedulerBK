@@ -11,7 +11,7 @@ public interface IClientService {
     boolean createClient(Client client);
     Client getClient(int clientid);
     List<Client> getClients();
-    boolean updateClient(Client client, Address address);
+    boolean updateClient(Client client);
 
     Appointment getAppointmentById(int apptId);
     List<Appointment> getAppointments(Client client);

@@ -133,7 +133,7 @@ public class EmployeeController {
         @ResponseBody
     @PostMapping("/employee/update")
     public ResponseEntity updateEmployee(@RequestBody Employee inObject) {
-        logger.info("EmployeeController::updateEmployee => {}", inObject.toString());
+            System.out.printf("EmployeeController::updateEmployee => %s", inObject.toString());
 //        if (this.empService.updateEmployee(inObject.employee, inObject.address))
         if (this.empService.updateEmployee(inObject))
             return new ResponseEntity("EMPLOYEE UPATED SUCCESSFULLY", HttpStatus.OK);

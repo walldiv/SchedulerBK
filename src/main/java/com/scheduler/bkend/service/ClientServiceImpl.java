@@ -65,14 +65,14 @@ public class ClientServiceImpl implements IClientService {
     }
 
     @Override
-    public boolean updateClient(Client client, Address address) {
+    public boolean updateClient(Client client) {
         Client tmp = this.clientRepo.getOne(client.getClientid());
-        Address tmpAddress = this.addRepo.getOne(tmp.getAddress());
+        Address tmpAddress = this.addRepo.getOne(client.getAddress().getAddressid());
         try{
             tmp = tmp.merge(client);
-            tmpAddress = tmpAddress.merge(address);
-            clientRepo.save(tmp);
+            tmpAddress = tmpAddress.merge(client.getAddress());
             addRepo.save(tmpAddress);
+            clientRepo.save(tmp);
             return true;
         } catch (Exception e) {
             logger.error(e.toString());

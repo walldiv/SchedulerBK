@@ -18,8 +18,6 @@ public class Client implements MyClassUtils{
     private String lname;
     @Column(name = "phone")
     private String phone;
-    @Column(name = "address")
-    private int address;
     @Column(name = "email")
     private String email;
     @Column(name = "dateofbirth")
@@ -29,13 +27,17 @@ public class Client implements MyClassUtils{
     @Column(name = "allowsms")
     private boolean allowsms;
 
+    @OneToOne
+    @JoinColumn(name = "address")
+    private Address address;
+
 //    @OneToMany(mappedBy = "client")
 //    private List<Appointment> appointments;
 
     public Client() {
     }
 
-    public Client(String fname, String lname, String phone, int address, String email,
+    public Client(String fname, String lname, String phone, Address address, String email,
                   LocalDate dateofbirth, String emergencycontact, boolean allowsms) {
         this.fname = fname;
         this.lname = lname;
@@ -86,10 +88,10 @@ public class Client implements MyClassUtils{
     public void setPhone(String phone) {
         this.phone = phone;
     }
-    public int getAddress() {
+    public Address getAddress() {
         return address;
     }
-    public void setAddress(int address) {
+    public void setAddress(Address address) {
         this.address = address;
     }
     public String getEmail() {

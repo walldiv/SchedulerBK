@@ -45,25 +45,19 @@ public class ClientController {
 
     @ResponseBody
     @PostMapping("/client/create")
-    public ResponseEntity createClient(@RequestBody ClientAndAddress inObject){
-        logger.info("ClientController::createClient => {}", inObject.client.toString());
-        logger.info("ClientController::createClient => {}", inObject.address.toString());
+    public ResponseEntity createClient(@RequestBody Client inObject){
+        logger.info("ClientController::createClient => {}", inObject.toString());
         //Add the address if it doesnt already exist - else use existing address in DB
         ExampleMatcher matchlist = ExampleMatcher.matchingAll()
                 .withMatcher("street", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
                 .withMatcher("zipcode", ExampleMatcher.GenericPropertyMatchers.ignoreCase().contains())
                 .withIgnorePaths("addressid", "street2","city", "state", "country");
-        Example<Address> example = Example.of(inObject.address, matchlist);
+        Example<Address> example = Example.of(inObject.getAddress(), matchlist);
         Optional<Address> thisAddress = this.addressRepo.findOne(example);
-        int addressid = -1;
         if(thisAddress.isPresent())
-                addressid = thisAddress.get().getAddressid();
-        else{
-            Address tmp = this.addressRepo.save(inObject.address);
-            addressid = tmp.getAddressid();
-        }
-        inObject.client.setAddress(addressid);
-        if(this.clientService.createClient(inObject.client))
+            inObject.setAddress(thisAddress.get());
+        else this.addressRepo.save(inObject.getAddress());
+        if(this.clientService.createClient(inObject))
             return new ResponseEntity("CLIENT CREATED SUCCESSFULLY", HttpStatus.OK);
         else return new ResponseEntity("ERROR CREATING CLIENT", HttpStatus.BAD_REQUEST);
     }
@@ -73,6 +67,7 @@ public class ClientController {
     public ResponseEntity<Client> getClient(@RequestParam("clientid") int clientid) {
         logger.info("ClientController::getClient => {}", clientid);
         Client client = this.clientService.getClient(clientid);
+        System.out.printf("RETRIEVED CLIENT => %s", client.toString());
         return new ResponseEntity<Client>(client, HttpStatus.OK);
     }
 
@@ -87,9 +82,9 @@ public class ClientController {
 
     @ResponseBody
     @PostMapping("/client/update")
-    public ResponseEntity updateClient(@RequestBody ClientAndAddress inObject){
-        logger.info("ClientController::updateClient => {}", inObject.client.toString());
-        if(this.clientService.updateClient(inObject.client, inObject.address))
+    public ResponseEntity updateClient(@RequestBody Client inObject){
+        logger.info("ClientController::updateClient => {}", inObject.toString());
+        if(this.clientService.updateClient(inObject))
             return new ResponseEntity("CLIENT UPDATED SUCCESSFULLY", HttpStatus.OK);
         else return new ResponseEntity("ERROR UPDATING CLIENT", HttpStatus.BAD_REQUEST);
     }
